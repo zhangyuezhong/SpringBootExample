@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+<title>Spring Security Example</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet"
+	href="/js/bootstrap-3.3.7-dist/css/bootstrap.min.css" />
+<script type="text/javascript" src="/js/jquery/jquery-3.1.1.min.js"></script>
+<script type="text/javascript"
+	src="/js/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+
+
+
+
+</head>
+<body>
+	<h1>Welcome!</h1>
+
+	<p>
+		Click <a th:href="@{/hello}">here</a> to see a greeting.
+	</p>
+
+	<script type="text/javascript">
+		$(document).ready(function() {
+			console.log("ready!");
+			$.get("/greeting?name=Yuezhong", function(resp) {
+				console.log(resp); // server response
+			});
+		});
+	</script>
+
+</body>
+</html>

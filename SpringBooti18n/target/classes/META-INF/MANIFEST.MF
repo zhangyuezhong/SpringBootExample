@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Implementation-Title: SpringBooti18n
+Implementation-Version: 0.0.1-SNAPSHOT
+Built-By: yuezhong
+Implementation-Vendor-Id: com.telstra
+Build-Jdk: 1.8.0_65
+Implementation-URL: http://projects.spring.io/spring-boot/SpringBooti1
+ 8n/
+Created-By: Maven Integration for Eclipse
+Implementation-Vendor: Pivotal Software, Inc.
+

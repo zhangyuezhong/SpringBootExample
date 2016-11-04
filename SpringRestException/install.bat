@@ -1,0 +1,3 @@
+echo %PROCESSOR_ARCHITECTURE%
+
+prunsrv.exe //IS//Procrun-SpringBootWindowService --DisplayName="Procrun-SpringBootWindowService" --Description="Procrun-SpringBootWindowService" --Startup=auto --Install=%CD%\prunsrv.exe --Jvm=auto --Classpath=%CD%\target\SpringRestException-0.0.1-SNAPSHOT.jar --StartMode=jvm --StartClass=com.telstra.springboot.Bootstrap --StartMethod=start --StartParams=start --StopMode=jvm --StopClass=com.telstra.springboot.Bootstrap --StopMethod=stop --StopParams=stop --StdOutput=auto --StdError=auto --LogPath=%CD% --LogLevel=Debug

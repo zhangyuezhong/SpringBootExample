@@ -17,6 +17,7 @@ public class SseEmitterManager {
 	private static final Logger logger = LoggerFactory.getLogger(SseEmitterManager.class);
 	private Queue<UserSseEmitter> emitters = new ConcurrentLinkedQueue<UserSseEmitter>();
 
+	private int count = 0;
 	@Async
 	public void add(UserSseEmitter e) {
 		try {
@@ -58,7 +59,9 @@ public class SseEmitterManager {
 		emitters.removeIf((emitter) -> {
 			try {
 				emitter.send(evt);
-				logger.debug("sendCallEvent emitter {} CallEvent {}", emitter, event);
+				//logger.debug("sendCallEvent emitter {} CallEvent {}", emitter, event);
+				count++;
+				System.out.println("send out total=" + count);
 				return false;
 			} catch (Exception e) {
 				logger.error("sendCallEvent emitter {}  {}", emitter, e.getMessage());

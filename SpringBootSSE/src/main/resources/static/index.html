@@ -14,18 +14,18 @@
 			myEventSource = streamdataio.createEventSource(
 					"http://localhost:8080/api/callevents/6025/yzyahaiffa",
 					"YYYYYYY");
-			myEventSource.onData(function(data) {
+			myEventSource.onOpen(function() {
+				// you can also add custom behavior when the stream is opened
+				Logger.info("onOpen Connection is opened")
+			}).onData(function(data) {
 				Logger.info("onData={0}", data)
 				// initialize your data with the initial snapshot
 			}).onPatch(function(data) {
 				Logger.info("onPatch={0}", data)
 			}).onError(function(error) {
 				// do whatever you need in case of error
-				Logger.info("onError={0}", error)
-			}).onOpen(function() {
-				// you can also add custom behavior when the stream is opened
-				Logger.info("onOpen Connection is opened")
-			});
+				console.log("onerror=" + JSON.stringify(error));
+			})
 			myEventSource.open();
 		}
 		function disconnect() {

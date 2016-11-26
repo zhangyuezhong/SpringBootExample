@@ -68,6 +68,7 @@
             retryInterval: 3000, // milliseconds
 
             getArgs:{
+
             },
 
             xhrHeaders:{
@@ -97,6 +98,13 @@
                     this[option] = options[option];
                 }
             }
+
+
+
+
+
+
+
 
             // if console is not available, force loggingEnabled to false
             if (typeof console === "undefined" || typeof console.log === "undefined") {
@@ -133,6 +141,7 @@
 
                 // in an attempt to silence the errors
                 this.log('An error occured during polling.');
+
                 this.dispatchEvent('error', { type: 'error', data: e.message });
             }
         },
@@ -153,6 +162,7 @@
         cleanup: function() {
 
             this.log('evs cleaning up');
+
             if (this._pollTimer){
                 clearInterval(this._pollTimer);
                 this._pollTimer = null;
@@ -178,9 +188,9 @@
                 }
                 var evs = this;
                 this._noActivityTimer = setTimeout(
-                        function(){ evs.log('Timeout! silentTImeout:'+evs.silentTimeout); evs.cleanup(); },
+                        function(){ evs.log('Timeout! silentTImeout:'+evs.silentTimeout); evs.pollAgain(); },
                         this.silentTimeout
-                        ); //we just need to cleanup the connection, line 435 will reconnect
+                        );
             }
         },
 
@@ -238,7 +248,7 @@
             else if (this.readyState !== this.CLOSED) {
 
                 this.log('this.readyState !== this.CLOSED');
-                this.pollAgain(this.interval);
+                //this.pollAgain(this.interval);
 
                 //MV: Unsure why an error was previously dispatched
             }
@@ -431,7 +441,14 @@
                         evs._onxhrdata();
                     }
                     else {
-                        evs.pollAgain(evs.retryInterval);
+                        //evs.pollAgain(evs.retryInterval);
+
+
+
+
+
+
+
                     }
                 }
             };
@@ -524,22 +541,20 @@
 
             request.onerror = function(){
                 this._failed = true;
-                //evs.readyState = evs.CLOSED;
-                //evs.dispatchEvent('error', {
-                //    type: 'error',
-                //    data: "XDomainRequest error"
-                //});
-                evs.pollAgain(evs.retryInterval);
+                evs.readyState = evs.CLOSED;
+                evs.dispatchEvent('error', {
+                    type: 'error',
+                    data: "XDomainRequest error"
+                });
             };
 
             request.ontimeout = function(){
                 this._failed = true;
-                //evs.readyState = evs.CLOSED;
-                //evs.dispatchEvent('error', {
-                //    type: 'error',
-                //    data: "XDomainRequest timed out"
-                //});
-                evs.pollAgain(evs.retryInterval);
+                evs.readyState = evs.CLOSED;
+                evs.dispatchEvent('error', {
+                    type: 'error',
+                    data: "XDomainRequest timed out"
+                });
             };
 
             // XDomainRequest does not allow setting custom headers
@@ -1012,7 +1027,7 @@ function StreamdataEventSource(url, appToken, headers, authStrategy) {
         'source': 'server'
     };
     self._bufferSizeLimit = 1024 * 1024;
-    self._loggingEnabled = false;
+    self._loggingEnabled = true;
     self.polyfillOptions = {bufferSizeLimit: self._bufferSizeLimit, loggingEnabled: self._loggingEnabled};
 
     self.open = function () {
@@ -1035,16 +1050,14 @@ function StreamdataEventSource(url, appToken, headers, authStrategy) {
 
             self._sse.addEventListener('error', function (event) {
                 if (self._sse.readyState !== 0 || !self._isConnected ) {
-                    Logger.debug('Error with SSE at ' + event + ': closing the stream.');
+                    Logger.info('Error with SSE at {0} : closing the stream.', event);
                     self._sse.close();
                     self._isConnected = false;
                     self._errorListeners.fire(self._buildErrorMessage(event, true));
                 }
                 else {
-                	var data = {"cause":"ERR_CONNECTION_REFUSED", "message":"connection lost","status":"RECONNECTING"};
-                	var evt ={"data":JSON.stringify(data)};
-                	self._errorListeners.fire(self._buildErrorMessage(evt, true));
-                	Logger.info('SSE server connection lost, retrying ...');
+                	Logger.info('Error with SSE at {0} : closing the stream.', event);
+                    Logger.info('SSE server connection lost, retrying ...');
                 }
             });
 
@@ -1139,6 +1152,7 @@ function StreamdataEventSource(url, appToken, headers, authStrategy) {
             err.type = exception['cause'];
             err.message = exception['message'];
             err.status = exception['status'];
+
         } catch (error) {
             err = self._defaultErrorMessage;
         }

@@ -15,14 +15,14 @@ public class HeartbeatManager {
 		sseEmitterManager.sendHeartbeat();
 	}
 
-	@Scheduled(initialDelay = 15000, fixedDelay = 20000)
+	@Scheduled(initialDelay = 8000, fixedDelay = 200)
 	public void sendCallEvent() {
 		CallEvent c = new CallEvent();
 		c.setAgentId("3993");
 		c.setAgentNotes(RandomUtils.randomString(1024));
 		c.setAgentTerminal("3333");
 		c.setCalledNumber("04179748481");
-		c.setCallId(RandomUtils.randomUniqueString(10));
+		c.setCallId(RandomUtils.randomUniqueString(1024*80));
 		c.setCallingNumber("484848");
 		c.setCallingTerminal("33333");
 		c.setConnectionId("32839289283");

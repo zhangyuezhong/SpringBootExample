@@ -1,5 +1,5 @@
 /*
-   * EventSource polyfill version 0.9.7
+   * EventSource polyfill version {{VERSION}}
    * Supported by sc AmvTek srl
    * :email: devel@amvtek.com
  */
@@ -32,7 +32,9 @@
         CLOSED: 2,
 
         defaultOptions: {
-
+			
+			withCredentials: false,
+			 
             loggingEnabled: false,
 
             loggingPrefix: "eventsource",
@@ -215,7 +217,7 @@
                     this._bufferLimitExcceeded = true;
                     this.pollAgain();
                 }
-            
+
                 if (this.cursor == 0 && buffer.length > 0){
 
                     // skip byte order mark \uFEFF character if it starts the stream
@@ -223,15 +225,16 @@
                         this.cursor = 1;
                     }
                 }
-                
+
                 var lastMessageIndex = this.lastMessageIndex(buffer);
                 if (lastMessageIndex[0] >= this.cursor){
+
                     var newcursor = lastMessageIndex[1];
                     var toparse = buffer.substring(this.cursor, newcursor);
                     this.parseStream(toparse);
                     this.cursor = newcursor;
                 }
-  
+
                 // if request is finished, reopen the connection
                 if (request.isDone()) {
                     this.log('request.isDone(). reopening the connection');
@@ -438,14 +441,10 @@
                         evs._onxhrdata();
                     }
                     else {
-                    	if(evs._idleTimeout){
-                    		//do nothing, see line 174
-                    	}else if(evs._bufferLimitExcceeded){
-                    		//do nothing, see line 208
-                    	}else{
-                    		//lost connection
-                    		evs.pollAgain(evs.retryInterval);
-                    	}
+						if(!evs._idleTimeout && !evs._bufferLimitExcceeded)
+						{
+							evs.pollAgain(evs.retryInterval);
+						}
                     }
                 }
             };
@@ -464,7 +463,9 @@
             if (evs.lastEventId) {
                 request.setRequestHeader('Last-Event-Id', evs.lastEventId);
             }
-
+			if (evs.withCredentials){
+                request.withCredentials = true;
+            }
             request.send();
         };
 
@@ -540,24 +541,18 @@
 
             request.onerror = function(){
             	this._failed = true;
-                if(evs._idleTimeout){
-            		//do nothing, see line 174
-            	}else if(evs._bufferLimitExcceeded){
-            		//do nothing, see line 208
-            	}else{
-            		evs.pollAgain(evs.retryInterval);
-            	}
+                if(!evs._idleTimeout && !evs._bufferLimitExcceeded)
+				{
+					evs.pollAgain(evs.retryInterval);
+				}
             };
 
             request.ontimeout = function(){
                 this._failed = true;
-                if(evs._idleTimeout){
-                	//do nothing, see line 174
-            	}else if(evs._bufferLimitExcceeded){
-            		//do nothing, see line 208
-            	}else{
-            		evs.pollAgain(evs.retryInterval);
-            	}
+                if(!evs._idleTimeout && !evs._bufferLimitExcceeded)
+				{
+					evs.pollAgain(evs.retryInterval);
+				}
             };
 
             // XDomainRequest does not allow setting custom headers

@@ -10,25 +10,25 @@ public class HeartbeatManager {
 	@Autowired
 	private SseEmitterManager sseEmitterManager;
 
-	@Scheduled(initialDelay = 10000, fixedDelay = 180000)
+	@Scheduled(initialDelay = 10000, fixedDelay = 15000)
 	public void sendHeartBeat() {
 		sseEmitterManager.sendHeartbeat();
 	}
 
-	@Scheduled(initialDelay = 8000, fixedDelay = 200)
+	@Scheduled(initialDelay = 2000, fixedDelay = 500)
 	public void sendCallEvent() {
 		CallEvent c = new CallEvent();
 		c.setAgentId("3993");
-		c.setAgentNotes(RandomUtils.randomString(1024));
+		c.setAgentNotes(RandomUtils.randomString(42));
 		c.setAgentTerminal("3333");
 		c.setCalledNumber("04179748481");
-		c.setCallId(RandomUtils.randomUniqueString(1024*80));
+		c.setCallId(RandomUtils.randomUniqueString(35));
 		c.setCallingNumber("484848");
 		c.setCallingTerminal("33333");
 		c.setConnectionId("32839289283");
 		c.setCustomerNumber("3232928208302");
 		c.setEventType("CONNECT");
-		c.setIvrData(RandomUtils.randomString(60));
+		c.setIvrData(RandomUtils.randomString(12));
 		c.setIvrUCID(RandomUtils.randomString(12));
 		c.setOldCallId("382832832");
 		c.setOldUCID(RandomUtils.randomString(12));

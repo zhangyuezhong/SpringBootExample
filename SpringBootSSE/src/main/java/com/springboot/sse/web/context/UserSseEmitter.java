@@ -54,6 +54,5 @@ public class UserSseEmitter extends SseEmitter {
 		m.add(HttpMethod.OPTIONS);
 		headers.setAccessControlAllowMethods(m);
 		headers.setAccessControlMaxAge(1800);
-		System.out.println("set header");
 	}
 }

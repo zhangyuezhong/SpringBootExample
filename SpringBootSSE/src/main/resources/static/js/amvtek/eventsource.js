@@ -42,7 +42,9 @@
             bufferSizeLimit: 1024*1024, // bytes
 
             silentTimeout: 300000, // milliseconds
-
+            
+            retryInterval : 3000,
+            
             getArgs:{
                 'evs_buffer_size_limit': 1024*1024
             },
@@ -119,7 +121,7 @@
 
                 // in an attempt to silence the errors
                 this.log('There were errors inside the pool try-catch');
-                this.dispatchEvent('error', { type: 'error', data: e.message });
+                this.dispatchEvent('error', { type: 'error', data: e.message ,cause:"ConnectionLost"});
             }
         },
 
@@ -128,9 +130,16 @@
             // schedule poll to be called after interval milliseconds
             var evs = this;
             evs.readyState = evs.CONNECTING;
+            var cause ="ConnectionLost";
+            if(evs._idleTimeout){
+            	cause = "IdleTimeout";
+        	}else if(evs._bufferLimitExcceeded){
+        		cause = "BufferLimitExcceeded";
+        	}
             evs.dispatchEvent('error', {
                 type: 'error',
-                data: "Reconnecting "
+                data: "Reconnecting ",
+                cause: cause
             });
             this._pollTimer = setTimeout(function(){evs.poll()}, interval||0);
         },
@@ -181,7 +190,7 @@
         close: function () {
 
             this.readyState = this.CLOSED;
-            this.log('Closing connection. readyState: '+this.readyState);
+            this.log('Closing connection. readyState: CLOSED');
             this.cleanup();
         },
 
@@ -194,7 +203,7 @@
                 this.resetNoActivityTimer();
 
                 // move this EventSource to OPEN state...
-                if (this.readyState == this.CONNECTING) {
+                if (this._bufferLimitExcceeded === false && this.readyState == this.CONNECTING) {
                     this.readyState = this.OPEN;
                     this.dispatchEvent('open', { type: 'open' });
                 }
@@ -349,7 +358,9 @@
         onopen: null,
 
         readyState: 0,
+        
         _idleTimeout : false,
+        
         _bufferLimitExcceeded : false,
 
         // ===================================================================
@@ -433,7 +444,7 @@
                     		//do nothing, see line 208
                     	}else{
                     		//lost connection
-                    		evs.pollAgain(1000);
+                    		evs.pollAgain(evs.retryInterval);
                     	}
                     }
                 }
@@ -534,7 +545,7 @@
             	}else if(evs._bufferLimitExcceeded){
             		//do nothing, see line 208
             	}else{
-            		evs.pollAgain(1000);
+            		evs.pollAgain(evs.retryInterval);
             	}
             };
 
@@ -545,7 +556,7 @@
             	}else if(evs._bufferLimitExcceeded){
             		//do nothing, see line 208
             	}else{
-            		evs.pollAgain(1000);
+            		evs.pollAgain(evs.retryInterval);
             	}
             };
 

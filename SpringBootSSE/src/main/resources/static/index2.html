@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="/js/streamdataio.js"></script>
+</head>
+<body>
+
+	<h1>Getting server updates</h1>
+	<div id="result"></div>
+
+	<script>
+		function start() {
+					
+			var appToken = "NmEtYTljN2UtYmM1MGZlMGRiNGFQzYS00MGRkLTkNTZlMDY1";
+			var headers = [ 'Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==' ];
+			myEventSource = streamdataio.createEventSource(
+					"http://localhost:8080/api/callevents/6025/yzyahaiffa",
+					appToken, headers);
+			
+			//remove https://streamdata.motwin.net/ from the URL
+			myEventSource.getFullUrl = myEventSource._decorate;
+			myEventSource._decorate = function(url, headers) {
+				var fullURL = myEventSource.getFullUrl(url, headers);
+				return fullURL.replace("https://streamdata.motwin.net/", "");
+			}; //END
+			
+			
+			myEventSource.onData(function(data) {
+				// initialize your data with the initial snapshot
+				console.log("onData " + JSON.stringify(data));
+			}).onPatch(function(patch) {
+				// update the data with the provided patch
+			}).onError(function(error) {
+				// do whatever you need in case of error
+				console.log(JSON.stringify(error));
+			}).onOpen(function() {
+				// you can also add custom behavior when the stream is opened
+				console.log("streamdata Event Source connected.")
+			});
+
+			myEventSource.open();
+		}
+		function disconnect() {
+			if (myEventSource != null) {
+				myEventSource.close();
+				myEventSource = null;
+			}
+		};
+	</script>
+	<button onclick="start()">Start</button>
+	<button onclick="disconnect()">Stop</button>
+</body>
+</html>
+

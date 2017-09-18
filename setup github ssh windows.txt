@@ -1,0 +1,18 @@
+login to Linux server, su to root
+
+ssh-keygen -t rsa -b 4096 -C "username@example.com"
+
+enter a passphrase
+two file will be generated under /home/root/.ssh
+download the two files (id_rsa and id_rsa.pub) to Windows  C:\Users\{username}\.ssh 
+
+open the id_rsa.pub file and copy the content, go to https://github.com/settings/keys   add a NEW SSH key (paste the content)
+
+go to C:\Users\{username}\
+create a file name .bashrc
+copy the below content to the file
+
+#!/bin/bash
+eval $(ssh-agent)
+ssh-add ~/.ssh/id_rsa
+
